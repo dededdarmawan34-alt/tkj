@@ -1,0 +1,143 @@
+// Data produk sample
+const products = [
+  { id: 1, name: "Kaos Polos", price: 75000, image: "https://via.placeholder.com/300x150?text=Kaos+Polos" },
+  { id: 2, name: "Celana Jeans", price: 150000, image: "https://via.placeholder.com/300x150?text=Celana+Jeans" },
+  { id: 3, name: "Sepatu Sneakers", price: 250000, image: "https://via.placeholder.com/300x150?text=Sepatu+Sneakers" },
+  { id: 4, name: "Jaket Hoodie", price: 200000, image: "https://via.placeholder.com/300x150?text=Jaket+Hoodie" }
+];
+
+// Fungsi tambah ke keranjang
+function addToCart(id) {
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+  cart.push(product);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  alert(`"${product.name}" telah ditambahkan ke keranjang.`);
+}
+
+// Render produk di halaman Dashboard
+function renderProducts() {
+  const container = document.getElementById("productList");
+  if (!container) return;
+  container.innerHTML = "";
+  products.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <img src="${p.image}" alt="${p.name}">
+      <div class="product-info">
+        <h3>${p.name}</h3>
+        <p class="price">Rp${p.price.toLocaleString()}</p>
+        <button class="btn" onclick="addToCart(${p.id})">Tambah ke Keranjang</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Render keranjang di halaman Keranjang
+function renderCart() {
+  const container = document.getElementById("cartItems");
+  if (!container) return;
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  container.innerHTML = "";
+  let total = 0;
+  cart.forEach((item, idx) => {
+    total += item.price;
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <img src="${item.image}" alt="${item.name}">
+      <div class="product-info">
+        <h3>${item.name}</h3>
+        <p class="price">Rp${item.price.toLocaleString()}</p>
+        <button class="btn" onclick="removeFromCart(${idx})">Hapus</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  document.getElementById("cartTotal").innerText = "Rp" + total.toLocaleString();
+}
+
+// Fungsi hapus item keranjang
+function removeFromCart(index) {
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  if (index < 0 || index >= cart.length) return;
+  const removed = cart.splice(index, 1);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
+
+// Handling tombol lanjut ke pembayaran
+function initCartPage() {
+  const btn = document.getElementById("goToPaymentBtn");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (cart.length === 0) {
+      alert("Keranjang kosong. Silakan pilih produk terlebih dahulu.");
+      return;
+    }
+    window.location.href = "payment.html";
+  });
+}
+
+// Form pembayaran
+function initPaymentForm() {
+  const form = document.getElementById("paymentForm");
+  if (!form) return;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const paymentMethod = document.getElementById("paymentMethod").value;
+    const courier = document.getElementById("courier").value;
+    const address = document.getElementById("address").value.trim();
+    if (!paymentMethod || !courier || !address) {
+      alert("Lengkapi semua data!");
+      return;
+    }
+    const resi = "RESI-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+    const info = `Metode: ${paymentMethod} | Kurir: ${courier} | Resi: ${resi}`;
+    document.getElementById("resiInfo").innerText = info;
+
+    form.classList.add("hidden");
+    document.getElementById("receipt").classList.remove("hidden");
+
+    // Simulasi map
+    initMap();
+  });
+}
+
+// Map Google
+function initMap() {
+  const mapEl = document.getElementById("map");
+  if (!mapEl) return;
+  const lokasiToko = { lat: -6.914744, lng: 107.609810 }; // Tasikmalaya atau ubah sesuai
+  const map = new google.maps.Map(mapEl, {
+    zoom: 14,
+    center: lokasiToko
+  });
+  const marker = new google.maps.Marker({
+    position: lokasiToko,
+    map,
+    title: "Paket Anda Sedang Dikirim"
+  });
+
+  // simulasi pergerakan marker (opsional)
+  let angle = 0;
+  setInterval(() => {
+    angle += 0.05;
+    const lat = lokasiToko.lat + 0.003 * Math.cos(angle);
+    const lng = lokasiToko.lng + 0.003 * Math.sin(angle);
+    marker.setPosition({ lat, lng });
+    map.panTo({ lat, lng });
+  }, 3000);
+}
+
+// Inisialisasi tiap halaman
+document.addEventListener("DOMContentLoaded", () => {
+  renderProducts();
+  renderCart();
+  initCartPage();
+  initPaymentForm();
+});

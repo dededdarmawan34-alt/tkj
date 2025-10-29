@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ShopeeKita - Keranjang</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="brand">
+      <div class="logo">🛍️</div>
+      <div>
+        <h1>Nama Toko</h1>
+        <small>Keranjang Belanja</small>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="btn" href="index.html">Kembali</a>
+    </div>
+  </header>
+
+  <main class="container cart-page">
+    <h2>Keranjang Anda</h2>
+
+    <div id="cart-area">
+      <table class="cart-table">
+        <thead>
+          <tr><th>Produk</th><th>Harga</th><th>Qty</th><th>Subtotal</th><th>Aksi</th></tr>
+        </thead>
+        <tbody id="cart-body"></tbody>
+      </table>
+
+      <div class="cart-summary">
+        <p>Total: <strong>Rp <span id="cart-total">0</span></strong></p>
+        <button id="btn-payment" class="primary" onclick="goToPayment()">Lanjut ke Pembayaran</button>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <small>© 2025 Nama Toko</small>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
